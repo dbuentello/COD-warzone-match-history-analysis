@@ -101,8 +101,6 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
         return null;
     }
 
-
-
     const fuzzySearchResult = await api.fuzzySearchUsername(playerInfo.username);
 
     if (fuzzySearchResult === undefined) {
