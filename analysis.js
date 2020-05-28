@@ -101,6 +101,8 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
         return null;
     }
 
+
+
     const fuzzySearchResult = await api.fuzzySearchUsername(playerInfo.username);
 
     if (fuzzySearchResult === undefined) {
@@ -127,7 +129,9 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
  * @returns A player object with some player information and statistics or null.
  */
 const verifyThatPlayerWasInMatch = async (playerInfo, matchInfo) => {
-    const player = await api.fetchPlayer(playerInfo);
+    const cachePlayer = (cache.players.length > 0) ? undefined : cache.players.find(u => u.username == playerInfo.username && u.platform == playerInfo.platform);
+
+    const player = (cachePlayer !== undefined) ? cachePlayer : await api.fetchPlayer(playerInfo);
 
     if (player !== null) {
         const playerMatches = await api.fetchMatchesForPlayer(playerInfo);
