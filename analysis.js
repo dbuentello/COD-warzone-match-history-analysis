@@ -57,14 +57,12 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
     const playerFetchQueue = new PQueue({ concurrency: 4 });
 
     for (const playerInfo of matchInfo.playersInfoToFollow) {
-        mainLogger.debug(`Added player '${playerInfo.username}' on '${playerInfo.platform}' to queue.`)
         const player = playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict));
 
         playersToFollow.push(player);
     }
 
     for (const playerInfo of matchInfo.otherPlayersInfo) {
-        mainLogger.debug(`Added player '${playerInfo.username}' on '${playerInfo.platform}' to queue.`)
         const player = playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict));
 
         if (player !== null) {
@@ -85,8 +83,6 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
     }
 
     const cachePlayer = (playerCache.length > 0) ? undefined : playerCache.find(u => u.username == playerInfo.username && u.platform == playerInfo.platform);
-
-    mainLogger.debug(playerCache)
 
     if (cachePlayer !== undefined) {
         mainLogger.info(`Found player '${playerInfo.username}' on '${playerInfo.platform}' in the cache.`);
@@ -160,11 +156,13 @@ const main = async () => {
 
     const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
     const matchesInfo = await parseMatchesInfo(rawMatches);
-    const matches = await fetchMatches([matchesInfo.filter(mi => mi.id == '989627047972837858')[0]], true);
+    const filteredMatch = matchesInfo.filter(m => m.id == '989627047972837858')[0];
+    const matches = await fetchMatches([filteredMatch], true);
     const jsonResult = JSON.stringify(matches);
 
-    fs.writeFile(`${playerInfo.username} - ${playerInfo.platform} - random good game analysis.json`, jsonResult, function (error) {
-        if (error) console.error(error);
+    fs.writeFile(`Analysis of match with id ${filteredMatch.id} following ${playerInfo.username} on ${playerInfo.platform}.json`, jsonResult, function (error) {
+        if (error)
+            mainLogger.info(`Failed to write data to a file: ${error}`);
     });
 };
 
