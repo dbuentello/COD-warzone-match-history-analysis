@@ -23,7 +23,10 @@ const loginToApi = async () => {
 const fuzzySearchUsername = async (username) => {
     const loggedIn = await loginToApi();
 
+    logger.info(`Fuzzy searching '${username}'.`);
+
     if (loggedIn == false) {
+        logger.error(`Fuzzy search failed for username '${username}': Not logged in.`);
         return [];
     }
 
@@ -39,7 +42,10 @@ const fuzzySearchUsername = async (username) => {
 const fetchMatchesForPlayer = async (playerInfo) => {
     const loggedIn = await loginToApi();
 
+    logger.info(`Fetching matches for '${playerInfo.username}' on '${playerInfo.platform}'.`);
+
     if (loggedIn == false) {
+        logger.error(`Could not fetch matches for '${playerInfo.username}' on '${playerInfo.platform}': Not logged in.`);
         return [];
     }
 
@@ -56,7 +62,10 @@ const fetchMatchesForPlayer = async (playerInfo) => {
 const fetchPlayer = async (playerInfo) => {
     const loggedIn = await loginToApi();
 
+    logger.info(`Fetching player '${playerInfo.username}' on '${playerInfo.platform}'.`);
+
     if (loggedIn == false) {
+        logger.error(`Couldn't fetch '${playerInfo.username}' on '${playerInfo.platform}': Not logged in.`);
         return new PlayerClass(playerInfo, null);;
     }
 
