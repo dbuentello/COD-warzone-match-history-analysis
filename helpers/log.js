@@ -7,9 +7,9 @@ log4js.configure({
 		dateFileFilter: { type: 'logLevelFilter', appender: 'dateFile', level: 'INFO' },
 	},
 	categories: {
-		default: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'ALL' },
-		api: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'ALL' },
-		main: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'ALL' },
+		default: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'DEBUG' },
+		api: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'DEBUG' },
+		main: { appenders: ['stdoutFilter', 'dateFileFilter'], level: 'DEBUG' },
 	},
 });
 

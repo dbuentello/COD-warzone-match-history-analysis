@@ -9,7 +9,7 @@ module.exports = class Match {
             duration: matchInfo.duration,
         };
         this.statistics = {
-            totalPlayers: match.playerCount,
+            totalPlayers: matchInfo.playerCount,
             totalPlayersFound: (playersToFollow.length + otherPlayers.length),
             // countPerPlatform: {
             //     pc: _.countBy(playersInfo, (u) => u.platform == 'battle' || u.platform == 'uno').true,

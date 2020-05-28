@@ -2,7 +2,7 @@ module.exports = class Player {
     constructor(playerInfo, data) {
         this.info = playerInfo;
         this.found = (data !== null) ? true : false;
-        this.stats = {
+        this.statistics = {
             wins: (data !== null) ? data.br.wins : 0,
             kills: (data !== null) ? data.br.kills : 0,
             kdRatio: (data !== null) ? data.br.kdRatio : 0,

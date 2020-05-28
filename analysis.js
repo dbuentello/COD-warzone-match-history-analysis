@@ -1,5 +1,6 @@
 require("dotenv").config();
-const fs = require('fs');
+const cache = require('./helpers/cache')
+const fs = require('fs').promises;
 const api = require('./helpers/api');
 const MatchClass = require('./classes/Match');
 const MatchInfoClass = require('./classes/MatchInfo');
@@ -7,8 +8,12 @@ const PlayerInfoClass = require('./classes/PlayerInfo');
 const { default: PQueue } = require('p-queue');
 const log = require('./helpers/log');
 const mainLogger = log.mainLogger;
-let playerCache = [];
 
+/** 
+ * Parses raw data from the api to more readable and useable data.
+ * @param rawMatches The matches straight from the api.
+ * @returns An array of matches cleaned up into MatchInfo objects.
+ */
 const parseMatchesInfo = async (rawMatches) => {
     if (rawMatches === undefined) {
         return null;
@@ -24,8 +29,6 @@ const parseMatchesInfo = async (rawMatches) => {
 
         for (const rankedTeam of rawMatch.rankedTeams) {
             for (const player of rankedTeam.players) {
-                mainLogger.info(`Parsing info for player '${player.username}' on '${player.platform}'.`);
-
                 const filteredPlayer = new PlayerInfoClass(player);
 
                 if (player.team == rawMatch.player.team)
@@ -44,6 +47,12 @@ const parseMatchesInfo = async (rawMatches) => {
     return matchesInfo;
 };
 
+/** 
+ * Fetches all players it can find from a matchInfo object.
+ * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
+ * @param strict Boolean that is used to decide whether the program should or should not fetch a user by fuzzy searching and comparing match history.
+ * @returns A match object with some match information, statistics, and all players found in that match from the api.
+ */
 const fetchPlayersFromMatch = async (matchInfo, strict) => {
     if (matchInfo === undefined || matchInfo === null) {
         return null;
@@ -57,48 +66,41 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
     const playerFetchQueue = new PQueue({ concurrency: 4 });
 
     for (const playerInfo of matchInfo.playersInfoToFollow) {
-        const player = playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict));
-
-        playersToFollow.push(player);
+        playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict).then((player) => {
+            if (player !== null) {
+                playersToFollow.push(player);
+            }
+        }));
     }
 
     for (const playerInfo of matchInfo.otherPlayersInfo) {
-        const player = playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict));
-
-        if (player !== null) {
-            otherPlayers.push(player);
-        }
+        playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict).then((player) => {
+            if (player !== null) {
+                otherPlayers.push(player);
+            }
+        }));
     }
 
     await playerFetchQueue.onEmpty();
+    await cache.addPlayersToCache(playersToFollow.concat(otherPlayers));
 
     mainLogger.info(`Fetched ${playersToFollow.length + otherPlayers.length} players from match with id '${matchInfo.id}'.`);
 
     return new MatchClass(matchInfo, playersToFollow, otherPlayers);
 }
 
+/** 
+ * Fetches a player from the the api with given information from a match. If told to applies fuzzy searching to ensure the correct player is fetched.
+ * @param playerInfo Cleaned up object containing the necessary information for a player.
+ * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
+ * @param strict Boolean that is used to decide whether the program should or should not fetch a user by fuzzy searching and comparing match history.
+ * @returns A player object with some player information and statistics or null.
+ */
 const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
     if (playerInfo == undefined || playerInfo == null) {
         return null;
     }
 
-    const cachePlayer = (playerCache.length > 0) ? undefined : playerCache.find(u => u.username == playerInfo.username && u.platform == playerInfo.platform);
-
-    if (cachePlayer !== undefined) {
-        mainLogger.info(`Found player '${playerInfo.username}' on '${playerInfo.platform}' in the cache.`);
-        return cachePlayer;
-    }
-
-    const player = await fetchPlayerThroughFuzzySearch(playerInfo, matchInfo, strict);
-
-    if (player !== null && player !== undefined) {
-        playerCache.push(player);
-    }
-
-    return player;
-}
-
-const fetchPlayerThroughFuzzySearch = async (playerInfo, matchInfo, strict) => {
     const fuzzySearchResult = await api.fuzzySearchUsername(playerInfo.username);
 
     if (fuzzySearchResult === undefined) {
@@ -118,6 +120,12 @@ const fetchPlayerThroughFuzzySearch = async (playerInfo, matchInfo, strict) => {
     return null;
 };
 
+/** 
+ * Checks if a player was found inside of a match by comparing the match id's.
+ * @param playerInfo Cleaned up object containing the necessary information for a player.
+ * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
+ * @returns A player object with some player information and statistics or null.
+ */
 const verifyThatPlayerWasInMatch = async (playerInfo, matchInfo) => {
     const player = await api.fetchPlayer(playerInfo);
 
@@ -131,11 +139,18 @@ const verifyThatPlayerWasInMatch = async (playerInfo, matchInfo) => {
         }
     }
 
-    mainLogger.info(`Couldn't find player ${playerInfo.username} in match '${matchInfo.id}' on any platform.`)
+    mainLogger.info(`Couldn't find player '${playerInfo.username}' on '${playerInfo.platform}' in match '${matchInfo.id}'.`)
 
     return null;
 };
 
+/** 
+ * Fetches matches from the api using the matchesInfo.
+ * @param playerInfo Cleaned up object containing the necessary information for a player.
+ * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
+ * @param strict Boolean that is used to decide whether the program should or should not fetch a user down the line by fuzzy searching and comparing match history.
+ * @returns A player object with some player information and statistics or null.
+ */
 const fetchMatches = async (matchesInfo, strict) => {
     let matches = [];
 
@@ -147,7 +162,21 @@ const fetchMatches = async (matchesInfo, strict) => {
     return matches;
 };
 
+/** 
+ * Writes a match to a json file.
+ * @param match Cleaned up object containing the necessary information to fetch all users from it.
+ * @param playerInfo Cleaned up object containing the necessary information for a player.
+ */
+const writeMatchToFile = async (match, playerInfo) => {
+    await fs.writeFile(`Analysis of match with id ${match.id} following ${playerInfo.username} on ${playerInfo.platform}.json`, jsonResult, function (error) {
+        if (error) {
+            mainLogger.info(`Failed to write data to a file: ${error}`);
+        }
+    });
+};
+
 const main = async () => {
+    await cache.loadPlayersFromCache();
     const playerInfo = { username: 'Evexium#2747', platform: 'battle' }
 
     // Uncomment this if you have a json file with a raw call from the api for a raw 20 game match history.
@@ -156,14 +185,13 @@ const main = async () => {
 
     const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
     const matchesInfo = await parseMatchesInfo(rawMatches);
-    const filteredMatch = matchesInfo.filter(m => m.id == '989627047972837858')[0];
-    const matches = await fetchMatches([filteredMatch], true);
-    const jsonResult = JSON.stringify(matches);
 
-    fs.writeFile(`Analysis of match with id ${filteredMatch.id} following ${playerInfo.username} on ${playerInfo.platform}.json`, jsonResult, function (error) {
-        if (error)
-            mainLogger.info(`Failed to write data to a file: ${error}`);
-    });
+    if (matchesInfo.length > 0) {
+        const filteredMatch = matchesInfo.filter(m => m.id == '989627047972837858')[0];
+        const matches = await fetchMatches([filteredMatch], true);
+
+        await writeMatchToFile(matches[0], playerInfo);
+    };
 };
 
 main();
