@@ -10,6 +10,22 @@ module.exports = class PlayerInfo {
 		this.username = (player.username.split(']').pop() !== '') ? player.username.split(']').pop() : player.username;
 		this.platform = platforms[player.platform];
 		this.platformFound = '';
-		this.team = (player.team !== undefined) ? player.team : '';
+
+		if (player.team !== undefined) {
+			this.team = player.team;
+			this.gameStatistics = {
+				kills: player.playerStats.kills,
+				kdRatio: player.playerStats.kdRatio,
+				score: player.playerStats.score,
+				timePlayed: player.playerStats.timePlayed,
+				percentTimeMoving: player.playerStats.percentTimeMoving,
+				longestStreak: player.playerStats.longestStreak,
+				scorePerMinute: player.playerStats.scorePerMinute,
+				damageDone: player.playerStats.damageDone,
+				distanceTraveled: player.playerStats.distanceTraveled,
+				deaths: player.playerStats.deaths,
+				damageTaken: player.playerStats.damageTaken,
+			};
+		}
 	}
 };

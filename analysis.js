@@ -12,16 +12,16 @@ const log = require('./helpers/log');
 const mainLogger = log.mainLogger;
 
 const main = async () => {
-	const playerInfo = { username: 'Evexium#2747', platform: 'battle' }; // 1887874712497423229
+	const playerInfo = { username: 'Evexium#2747', platform: 'battle' };
 
-	// const rawFile = fs.readFileSync(`Analysis of match with id 1887874712497423229 following Evexium#2747 on battle.json`);
+	// const rawFile = fs.readFileSync(`.json`);
 	// const jsonParse = JSON.parse(rawFile);
 
 	const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
 	const matchesInfo = await parseMatchesInfo(rawMatches);
 
 	if (matchesInfo.length > 0) {
-		const filteredMatch = matchesInfo.filter(m => m.id == '1887874712497423229')[0];
+		const filteredMatch = matchesInfo.filter(m => m.id == '18105369431075682534')[0];
 		const matches = await fetchMatches([filteredMatch], true);
 		await fsAsync.writeFile(`Analysis of match with id ${matches[0].id} following ${playerInfo.username} on ${playerInfo.platform}.json`, JSON.stringify(matches[0]));
 	}
@@ -100,7 +100,7 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
 
 	mainLogger.info(`Fetching players from match with id '${matchInfo.id}'.`);
 
-	const playerFetchQueue = new PQueue({ concurrency: 3, timeout: 1800000 });
+	const playerFetchQueue = new PQueue({ concurrency: 4, timeout: 1800000 });
 
 	for (const playerInfo of matchInfo.playersInfoToFollow) {
 		playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict).then((player) => {
@@ -175,7 +175,7 @@ const verifyThatPlayerWasInMatch = async (potentialPlayerInfo, playerInfo, match
 			const match = _.find(playerMatches, { 'matchID': matchInfo.id });
 
 			if (match !== undefined) {
-				player.updateInfo(potentialPlayerInfo, playerInfo);
+				player.updateInfo(playerInfo);
 				return player;
 			}
 		}
