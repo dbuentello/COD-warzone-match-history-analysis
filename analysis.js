@@ -14,7 +14,7 @@ const mainLogger = log.mainLogger;
 const main = async () => {
 	const playerInfo = { username: 'Evexium#2747', platform: 'battle' };
 
-	// const rawFile = fs.readFileSync(`.json`);
+	// const rawFile = fs.readFileSync(`insertfilenamehere.json`);
 	// const jsonParse = JSON.parse(rawFile);
 
 	const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
