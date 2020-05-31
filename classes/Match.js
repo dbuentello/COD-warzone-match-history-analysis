@@ -18,27 +18,27 @@ module.exports = class Match {
 			totalPlayers: matchInfo.totalPlayers,
 			totalPlayersFound: this.countByFound(playersToFollow, otherPlayers),
 			countPerPlatform: {
-				pc: this.countByPlatform(playersToFollow, otherPlayers, 'battle'),
-				psn: this.countByPlatform(playersToFollow, otherPlayers, 'psn'),
-				xbl: this.countByPlatform(playersToFollow, otherPlayers, 'xbl'),
+				pc: this.countPerPlatform(playersToFollow, otherPlayers, 'battle'),
+				psn: this.countPerPlatform(playersToFollow, otherPlayers, 'psn'),
+				xbl: this.countPerPlatform(playersToFollow, otherPlayers, 'xbl'),
 			},
 			playerToFollowAverageStats: {
-				wins: this.averageByStatistic(playersToFollow, 'wins'),
-				kills: this.averageByStatistic(playersToFollow, 'kills'),
-				kdRatio: this.averageByStatistic(playersToFollow, 'kdRatio'),
-				timePlayed: this.averageByStatistic(playersToFollow, 'timePlayed'),
-				gamesPlayed: this.averageByStatistic(playersToFollow, 'gamesPlayed'),
-				scorePerMinute: this.averageByStatistic(playersToFollow, 'scorePerMinute'),
-				deaths: this.averageByStatistic(playersToFollow, 'deaths'),
+				wins: this.averagePerLifetimeStatistic(playersToFollow, 'wins'),
+				kills: this.averagePerLifetimeStatistic(playersToFollow, 'kills'),
+				kdRatio: this.averagePerLifetimeStatistic(playersToFollow, 'kdRatio'),
+				timePlayed: this.averagePerLifetimeStatistic(playersToFollow, 'timePlayed'),
+				gamesPlayed: this.averagePerLifetimeStatistic(playersToFollow, 'gamesPlayed'),
+				scorePerMinute: this.averagePerLifetimeStatistic(playersToFollow, 'scorePerMinute'),
+				deaths: this.averagePerLifetimeStatistic(playersToFollow, 'deaths'),
 			},
 			otherPlayersAverageStats: {
-				wins: this.averageByStatistic(otherPlayers, 'wins'),
-				kills: this.averageByStatistic(otherPlayers, 'kills'),
-				kdRatio: this.averageByStatistic(otherPlayers, 'kdRatio'),
-				timePlayed: this.averageByStatistic(otherPlayers, 'timePlayed'),
-				gamesPlayed: this.averageByStatistic(otherPlayers, 'gamesPlayed'),
-				scorePerMinute: this.averageByStatistic(otherPlayers, 'scorePerMinute'),
-				deaths: this.averageByStatistic(otherPlayers, 'deaths'),
+				wins: this.averagePerLifetimeStatistic(otherPlayers, 'wins'),
+				kills: this.averagePerLifetimeStatistic(otherPlayers, 'kills'),
+				kdRatio: this.averagePerLifetimeStatistic(otherPlayers, 'kdRatio'),
+				timePlayed: this.averagePerLifetimeStatistic(otherPlayers, 'timePlayed'),
+				gamesPlayed: this.averagePerLifetimeStatistic(otherPlayers, 'gamesPlayed'),
+				scorePerMinute: this.averagePerLifetimeStatistic(otherPlayers, 'scorePerMinute'),
+				deaths: this.averagePerLifetimeStatistic(otherPlayers, 'deaths'),
 			},
 		};
 		this.players = {
@@ -47,7 +47,7 @@ module.exports = class Match {
 		};
 	}
 
-	averageByStatistic(players, statistic) {
+	averagePerLifetimeStatistic(players, statistic) {
 		let value = 0; let count = 0;
 
 		for (const player of players) {
@@ -60,7 +60,7 @@ module.exports = class Match {
 		return value / count;
 	}
 
-	countByPlatform(playersToFollow, otherPlayers, platform) {
+	countPerPlatform(playersToFollow, otherPlayers, platform) {
 		const countPlayersToFollow = _.countBy(playersToFollow, function(p) { return p.info.platform === platform; }).true;
 		const countOtherPlayers = _.countBy(otherPlayers, function(p) { return p.info.platform === platform; }).true;
 

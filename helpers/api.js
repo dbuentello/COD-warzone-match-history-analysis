@@ -88,23 +88,12 @@ const fetchPlayer = async (playerInfo) => {
 
 	logger.info(`Fetching player '${playerInfo.username}' on '${playerInfo.platform}'.`);
 
-	// const cachePlayer = (cache.players.length > 0) ? undefined : cache.players.find(p => p.info.username == playerInfo.username && p.info.platform == playerInfo.platform);
-
-	// if (cachePlayer !== undefined) {
-	// 	logger.info(`Found player '${playerInfo.username}' on '${playerInfo.platform}' in the cache.`);
-	// 	const player = new PlayerClass(playerInfo, cachePlayer.statistics);
-	// 	player.convertCachePlayerInfo(cachePlayer.info);
-	// 	return player;
-	// }
-
 	if (loggedIn == false) {
 		logger.error(`Couldn't fetch '${playerInfo.username}' on '${playerInfo.platform}': Not logged in.`);
 		return new PlayerClass(playerInfo, null);
 	}
 
-	return await api.MWwz(playerInfo.username, api.platforms[playerInfo.platform]).then((data) => {
-		// const newCachePlayer = new CachePlayerClass(playerInfo, data);
-		// cache.addPlayerToMemoryCache(newCachePlayer);
+	return await api.MWBattleData(playerInfo.username, api.platforms[playerInfo.platform]).then((data) => {
 		logger.info(`Fetched player '${playerInfo.username}' on '${playerInfo.platform}'.`);
 		return new PlayerClass(playerInfo, data);
 	}).catch((error) => {

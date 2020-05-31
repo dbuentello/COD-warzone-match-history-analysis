@@ -4,12 +4,13 @@ module.exports = class Player {
 	 * @param playerInfo Cleaned up object containing the necessary information for a player.
 	 * @param data Warzone data from the api.
 	 */
-	constructor(playerInfo, data) {
+	constructor(playerInfo, playerGameStats, data) {
 		const dataIsValid = (data === null || Object.keys(data['br']).length === 0) ? false : true;
 
 		this.info = playerInfo;
 		this.found = dataIsValid;
-		this.statistics = (dataIsValid) ? {
+		this.gameStatistics = playerGameStats;
+		this.lifetimeStatistics = (dataIsValid) ? {
 			wins: data.br.wins,
 			kills: data.br.kills,
 			kdRatio: data.br.kdRatio,
