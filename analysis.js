@@ -100,7 +100,7 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
 
 	mainLogger.info(`Fetching players from match with id '${matchInfo.id}'.`);
 
-	const playerFetchQueue = new PQueue({ concurrency: 4, timeout: 1800000 });
+	const playerFetchQueue = new PQueue({ concurrency: 3, timeout: 1800000 });
 
 	for (const playerInfo of matchInfo.playersInfoToFollow) {
 		playerFetchQueue.add(async () => await fetchPlayerFromApi(playerInfo, matchInfo, strict).then((player) => {
