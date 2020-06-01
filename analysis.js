@@ -1,7 +1,6 @@
 require('dotenv').config();
 const _ = require('lodash');
-const fs = require('fs');
-const fsAsync = require('fs').promises;
+const fs = require('fs').promises;
 const api = require('./helpers/api');
 const MatchClass = require('./classes/Match');
 const MatchInfoClass = require('./classes/MatchInfo');
@@ -11,20 +10,22 @@ const { default: PQueue } = require('p-queue');
 const log = require('./helpers/log');
 const mainLogger = log.mainLogger;
 
-const main = async () => {
-	const playerInfo = { username: 'Evexium#2747', platform: 'battle' };
+const playerToSearch = { username: 'Evexium#2747', platform: 'battle' };
 
+const main = async () => {
+	// Analyse raw match data from a json file.
 	// const rawFile = fs.readFileSync(`insertfilenamehere.json`);
 	// const jsonParse = JSON.parse(rawFile);
 
 	const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
 	const matchesInfo = await parseMatchesInfo(rawMatches);
 
-	if (matchesInfo.length > 0) {
-		const filteredMatch = matchesInfo.filter(m => m.id == '18105369431075682534')[0];
-		const matches = await fetchMatches([filteredMatch], true);
-		await fsAsync.writeFile(`Analysis of match with id ${matches[0].id} following ${playerInfo.username} on ${playerInfo.platform}.json`, JSON.stringify(matches[0]));
-	}
+	// Analyse x matches.
+	await fetchMatches(matchesInfo, 5, true);
+
+	// Analyse 1 specific game.
+	// const filteredMatch = matchesInfo.filter(m => m.id == '13477695380722153907')[0];
+	// const matches = await fetchMatches([filteredMatch], true);
 };
 
 main();
@@ -73,15 +74,19 @@ const parseMatchesInfo = async (rawMatches) => {
  * @param strict Boolean that is used to decide whether the program should or should not fetch a user down the line by fuzzy searching and comparing match history.
  * @returns A player object with some player information and statistics or null.
  */
-const fetchMatches = async (matchesInfo, strict) => {
-	const matches = [];
+const fetchMatches = async (matchesInfo, stopAfter, strict) => {
+	let count = 0;
 
 	for (const matchInfo of matchesInfo) {
 		const match = await fetchPlayersFromMatch(matchInfo, strict);
-		matches.push(match);
-	}
+		await fs.writeFile(`Analysis of match with id ${match.id} following ${playerToSearch.username} on ${playerToSearch.platform}.json`, JSON.stringify(match));
 
-	return matches;
+		count++;
+
+		if (stopAfter === count) {
+			return;
+		}
+	}
 };
 
 /**
@@ -150,7 +155,7 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
 
 		if (player !== null) {
 			mainLogger.info(`Player '${potentialPlayerInfo.username}' was found in match '${matchInfo.id}' on '${potentialPlayerInfo.platform}'.`);
-			player.updateInfo(playerInfo);
+			player.updateInfo(playerInfo, true);
 			return player;
 		}
 
@@ -158,7 +163,7 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
 
 	mainLogger.info(`Couldn't find player '${playerInfo.username}' on any platform.`);
 	const player = new PlayerClass(playerInfo, null);
-	player.updateInfo(playerInfo);
+	player.updateInfo(playerInfo, false);
 	return player;
 };
 
