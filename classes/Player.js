@@ -27,10 +27,15 @@ module.exports = class Player {
 		} : 'No matching user was found for this player. So statistics could not be fetched.';
 	}
 
-	updateInfo(playerInfo) {
+	updateInfo(playerInfo, found) {
 		this.info.inGameName = playerInfo.inGameName;
 		this.info.platform = playerInfo.platform;
 		this.info.team = playerInfo.team;
 		this.gameStatistics = playerInfo.gameStatistics;
+
+		if (found === false) {
+			delete this.info.username;
+			delete this.info.platformFound;
+		}
 	}
 };

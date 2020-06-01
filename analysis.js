@@ -149,14 +149,17 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
 		const player = (strict) ? await verifyThatPlayerWasInMatch(new PlayerInfoClass(potentialPlayerInfo), playerInfo, matchInfo) : await api.fetchPlayer(new PlayerInfoClass(potentialPlayerInfo));
 
 		if (player !== null) {
-			mainLogger.info(`Player ${potentialPlayerInfo.username} was found in match '${matchInfo.id}' on '${potentialPlayerInfo.platform}'.`);
+			mainLogger.info(`Player '${potentialPlayerInfo.username}' was found in match '${matchInfo.id}' on '${potentialPlayerInfo.platform}'.`);
+			player.updateInfo(playerInfo);
 			return player;
 		}
+
 	}
 
 	mainLogger.info(`Couldn't find player '${playerInfo.username}' on any platform.`);
-
-	return new PlayerClass(playerInfo, null);
+	const player = new PlayerClass(playerInfo, null);
+	player.updateInfo(playerInfo);
+	return player;
 };
 
 /**
@@ -175,7 +178,6 @@ const verifyThatPlayerWasInMatch = async (potentialPlayerInfo, playerInfo, match
 			const match = _.find(playerMatches, { 'matchID': matchInfo.id });
 
 			if (match !== undefined) {
-				player.updateInfo(playerInfo);
 				return player;
 			}
 		}
