@@ -22,23 +22,50 @@ module.exports = class Match {
 				psn: this.countByPlatform(playersToFollow, otherPlayers, 'psn'),
 				xbl: this.countByPlatform(playersToFollow, otherPlayers, 'xbl'),
 			},
-			playerToFollowAverageStats: {
-				wins: this.averageByStatistic(playersToFollow, 'wins'),
-				kills: this.averageByStatistic(playersToFollow, 'kills'),
-				kdRatio: this.averageByStatistic(playersToFollow, 'kdRatio'),
-				timePlayed: this.averageByStatistic(playersToFollow, 'timePlayed'),
-				gamesPlayed: this.averageByStatistic(playersToFollow, 'gamesPlayed'),
-				scorePerMinute: this.averageByStatistic(playersToFollow, 'scorePerMinute'),
-				deaths: this.averageByStatistic(playersToFollow, 'deaths'),
+			playerToFollowAverageGameStatistics: {
+				kills: this.averageByStatistic(playersToFollow, 'kills', false),
+				kdRatio: this.averageByStatistic(playersToFollow, 'kdRatio', false),
+				score: this.averageByStatistic(playersToFollow, 'score', false),
+				timePlayed: this.averageByStatistic(playersToFollow, 'timePlayed', false),
+				percentTimeMoving: this.averageByStatistic(playersToFollow, 'percentTimeMoving', false),
+				longestStreak: this.averageByStatistic(playersToFollow, 'longestStreak', false),
+				scorePerMinute: this.averageByStatistic(playersToFollow, 'scorePerMinute', false),
+				damageDone: this.averageByStatistic(playersToFollow, 'damageDone', false),
+				distanceTraveled: this.averageByStatistic(playersToFollow, 'distanceTraveled', false),
+				deaths: this.averageByStatistic(playersToFollow, 'deaths', false),
+				damageTaken: this.averageByStatistic(playersToFollow, 'damageTaken', false),
+
 			},
-			otherPlayersAverageStats: {
-				wins: this.averageByStatistic(otherPlayers, 'wins'),
-				kills: this.averageByStatistic(otherPlayers, 'kills'),
-				kdRatio: this.averageByStatistic(otherPlayers, 'kdRatio'),
-				timePlayed: this.averageByStatistic(otherPlayers, 'timePlayed'),
-				gamesPlayed: this.averageByStatistic(otherPlayers, 'gamesPlayed'),
-				scorePerMinute: this.averageByStatistic(otherPlayers, 'scorePerMinute'),
-				deaths: this.averageByStatistic(otherPlayers, 'deaths'),
+			otherPlayersAverageGameStatistics: {
+				kills: this.averageByStatistic(otherPlayers, 'kills', false),
+				kdRatio: this.averageByStatistic(otherPlayers, 'kdRatio', false),
+				score: this.averageByStatistic(otherPlayers, 'score', false),
+				timePlayed: this.averageByStatistic(otherPlayers, 'timePlayed', false),
+				percentTimeMoving: this.averageByStatistic(otherPlayers, 'percentTimeMoving', false),
+				longestStreak: this.averageByStatistic(otherPlayers, 'longestStreak', false),
+				scorePerMinute: this.averageByStatistic(otherPlayers, 'scorePerMinute', false),
+				damageDone: this.averageByStatistic(otherPlayers, 'damageDone', false),
+				distanceTraveled: this.averageByStatistic(otherPlayers, 'distanceTraveled', false),
+				deaths: this.averageByStatistic(otherPlayers, 'deaths', false),
+				damageTaken: this.averageByStatistic(otherPlayers, 'damageTaken', false),
+			},
+			playerToFollowAverageLifetimeStatistics: {
+				wins: this.averageByStatistic(playersToFollow, 'wins', true),
+				kills: this.averageByStatistic(playersToFollow, 'kills', true),
+				kdRatio: this.averageByStatistic(playersToFollow, 'kdRatio', true),
+				timePlayed: this.averageByStatistic(playersToFollow, 'timePlayed', true),
+				gamesPlayed: this.averageByStatistic(playersToFollow, 'gamesPlayed', true),
+				scorePerMinute: this.averageByStatistic(playersToFollow, 'scorePerMinute', true),
+				deaths: this.averageByStatistic(playersToFollow, 'deaths', true),
+			},
+			otherPlayersAverageLifetimeStatistics: {
+				wins: this.averageByStatistic(otherPlayers, 'wins', true),
+				kills: this.averageByStatistic(otherPlayers, 'kills', true),
+				kdRatio: this.averageByStatistic(otherPlayers, 'kdRatio', true),
+				timePlayed: this.averageByStatistic(otherPlayers, 'timePlayed', true),
+				gamesPlayed: this.averageByStatistic(otherPlayers, 'gamesPlayed', true),
+				scorePerMinute: this.averageByStatistic(otherPlayers, 'scorePerMinute', true),
+				deaths: this.averageByStatistic(otherPlayers, 'deaths', true),
 			},
 		};
 		this.players = {
@@ -47,12 +74,12 @@ module.exports = class Match {
 		};
 	}
 
-	averageByStatistic(players, statistic) {
+	averageByStatistic(players, statistic, lifetime) {
 		let value = 0; let count = 0;
 
 		for (const player of players) {
 			if (player.found) {
-				value = value + player.statistics[statistic];
+				value = (lifetime) ? value + player.lifetimeStatistics[statistic] : value + player.gameStatistics[statistic];
 				count++;
 			}
 		}
