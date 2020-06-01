@@ -118,7 +118,7 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
 		}));
 	}
 
-	await playerFetchQueue.onEmpty();
+	await playerFetchQueue.onIdle();
 
 	mainLogger.info(`Fetched ${playersToFollow.length + otherPlayers.length} players from match with id '${matchInfo.id}'.`);
 
