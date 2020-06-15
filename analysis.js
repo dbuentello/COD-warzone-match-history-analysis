@@ -10,22 +10,22 @@ const { default: PQueue } = require('p-queue');
 const log = require('./helpers/log');
 const mainLogger = log.mainLogger;
 
-const playerToSearch = { username: 'Evexium#2747', platform: 'battle' };
+const playerToSearch = { username: 'BA8Y#2456', platform: 'battle' };
 
 const main = async () => {
 	// Analyse raw match data from a json file.
 	// const rawFile = fs.readFileSync(`insertfilenamehere.json`);
 	// const jsonParse = JSON.parse(rawFile);
 
-	const rawMatches = await api.fetchMatchesForPlayer(playerInfo);
+	const rawMatches = await api.fetchMatchesForPlayer(playerToSearch);
 	const matchesInfo = await parseMatchesInfo(rawMatches);
 
-	// Analyse x matches.
-	await fetchMatches(matchesInfo, 5, true);
+	// // Analyse x matches.
+	// await fetchMatches(matchesInfo, 5, true);
 
 	// Analyse 1 specific game.
-	// const filteredMatch = matchesInfo.filter(m => m.id == '13477695380722153907')[0];
-	// const matches = await fetchMatches([filteredMatch], true);
+	const filteredMatch = matchesInfo.filter(m => m.id == '14641991128575028320')[0];
+	await fetchMatches([filteredMatch], 1, true);
 };
 
 main();

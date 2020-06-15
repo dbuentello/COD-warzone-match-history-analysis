@@ -1,7 +1,5 @@
 # Personal exclusions
-images/
-*.json
-config.js
+analysedMatches/
 
 # Logs
 logs
@@ -120,3 +118,5 @@ dist
 .yarn/build-state.yml
 .pnp.*
 node_modules
+.vscode/settings.json
+data.json
