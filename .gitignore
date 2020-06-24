@@ -120,3 +120,4 @@ dist
 node_modules
 .vscode/settings.json
 data.json
+config.js
