@@ -1,5 +1,9 @@
 const config = module.exports = {};
 
+config.username = "Caedrius#2170";
+config.platform = "battle";
+config.matchId = '';
+
 // ADD THESE TO THAW BOT
 config.emails = [
 	'okg46545@eoopy.com',

@@ -10,7 +10,7 @@ const { default: PQueue } = require('p-queue');
 const log = require('./helpers/log');
 const mainLogger = log.mainLogger;
 
-const playerToSearch = { username: 'BA8Y#2456', platform: 'battle' };
+const playerToSearch = { username: config.username, platform: config.platform };
 
 const main = async () => {
 	// Analyse raw match data from a json file.
@@ -24,7 +24,7 @@ const main = async () => {
 	// await fetchMatches(matchesInfo, 5, true);
 
 	// Analyse 1 specific game.
-	const filteredMatch = matchesInfo.filter(m => m.id == '14641991128575028320')[0];
+	const filteredMatch = matchesInfo.filter(m => m.id == config.matchId)[0];
 	await fetchMatches([filteredMatch], 1, true);
 };
 
