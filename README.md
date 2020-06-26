@@ -21,7 +21,7 @@ That's it! Pst. Consider **starring** the repository if you like it! <3
 ### Step by step of how it works
 
 #### Fetches match history
-The past 20 matches for the given user name and platform are fetched. Raw data is cleaned up into a list of `MatchInfo` classes. Players are also extracted and put into 2 lists of `PlayerInfo`; `playersToFollow` (the team of the given username) and `otherPlayersToFollow`
+The past 20 matches for the given user name and platform are fetched. Raw data is cleaned up into a list of `MatchInfo` classes. Players are also extracted and put into 2 lists inside of `PlayerInfo`; `playersToFollow` (the team of the given username) and `otherPlayersToFollow`
 
 #### Loops through matches
 For each match in the array the script tries fetching as many players as possible to run calculations afterwards. There is however a catch. The player name in the match history is the display name. For example a players [BattleTag](https://eu.battle.net/support/en/article/75767) can be `Foo` but their display name can be `[CLAN]Bar`.
