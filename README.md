@@ -8,19 +8,22 @@ $ git clone https://github.com/dtslubbersen/COD-warzone-match-history-analysis.g
 $ cd ~/COD-warzone-match-history-analysis
 $ npm install
 ```
-Then make a `config.js` and a `.env` file following the formats shown in `configexample.cs` and `.envexample`.
+Then make a `config.js` and a `.env` file following the formats shown in `configexample.cs` and `.envexample`. Keep in mind trying to fetch all players from one match can use anywhere from 3000 to 5000 api requests. Add more then one API account to your `config.js` one account will be limited  before you can fetch one match.
 
 That's it! Pst. Consider **starring** the repository if you like it! <3
 
-## Step by step of what it does
+### To do
+- [ ] Build a player cache to reduce API calls.
 
-### 1. Fetching match history
+### Step by step of how it works
+
+#### Fetches match history
 The past 20 matches for the given user name and platform are fetched. Raw data is cleaned up into a list of `MatchInfo` classes. Players are also extracted and put into 2 lists of `PlayerInfo`; `playersToFollow` (the team of the given username) and `otherPlayersToFollow`
 
-### 2. Looping through matches
+#### Loops through matches
 For each match in the array the script tries fetching as many players as possible to run calculations afterwards. There is however a catch. The player name in the match history is the display name. For example a players [BattleTag](https://eu.battle.net/support/en/article/75767) can be `Foo` but their display name can be `[CLAN]Bar`.
 
-#### How it fetches as many players as possible from a match
+##### Fetches as many players as possible from a match
 1. Uses the FuzzySearch endpoint to search the display name without the clan tag. 
 ```json
 {
@@ -46,7 +49,7 @@ For each match in the array the script tries fetching as many players as possibl
 3. Fetches the past 20 matches for every single result in the filtered FuzzySearch and checks for a `matchID` match. 
 4. It keeps fetching the filtered FuzzySearch result until a player is found. If no player is found it moves on to the get FuzzySearch.
 
-### 3. Running calculations and writing to file
+#### Runs some calculations and outputs to file
 The scripts then makes some calculations based off of the fetched data and writes everything to a `.json` file.
 ```json
 {
