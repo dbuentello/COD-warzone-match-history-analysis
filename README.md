@@ -2,7 +2,7 @@
 A small but useful script to analyse your Warzone matches.
 
 ### Get started
-Setting up is extremely easy. Just issue the following commands:
+You must first install [Git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/download/). After that setting up is extremely easy, just issue the following commands:
 ```shell
 $ git clone https://github.com/dtslubbersen/COD-warzone-match-history-analysis.git
 $ cd ~/COD-warzone-match-history-analysis
