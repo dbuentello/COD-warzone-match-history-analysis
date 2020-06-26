@@ -70,11 +70,11 @@ The scripts then makes some calculations based off of the fetched data and write
     },
     "statistics": {
         "totalPlayers": 152,
-        "totalPlayersFound": 141,
+        "totalPlayersFound": 120,
         "countPerPlatform": {
-            "pc": 67,
-            "psn": 23,
-            "xbl": 51
+            "pc": 40,
+            "psn": 40,
+            "xbl": 40
         },
         "playerToFollowAverageGameStatistics||otherPlayersAverageGameStatistics": {
             "kills": 1.00,
