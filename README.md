@@ -8,7 +8,9 @@ $ git clone https://github.com/dtslubbersen/COD-warzone-match-history-analysis.g
 $ cd ~/COD-warzone-match-history-analysis
 $ npm install
 ```
-Then make a `config.js` and a `.env` file following the formats shown in `configexample.cs` and `.envexample`. Keep in mind trying to fetch all players from one match can use anywhere from 3000 to 5000 api requests. Add more then one API account to your `config.js` one account will be limited  before you can fetch one match.
+Then make a `config.js` and a `.env` file following the formats shown in `configexample.cs` and `.envexample`. 
+
+Keep in mind trying to fetch all players from one match can use anywhere from 3000 to 5000 api requests. Add more then one Call of Duty account to your `config.js` one account will be rate limited before you can finish fetching one match.
 
 That's it! Pst. Consider **starring** the repository if you like it! <3
 
