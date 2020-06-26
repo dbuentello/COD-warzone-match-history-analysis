@@ -16,6 +16,7 @@ That's it! Pst. Consider **starring** the repository if you like it! <3
 
 ### To do
 - [ ] Build a player cache to reduce API calls.
+- [ ] More an better error handling.
 
 ### Step by step of how it works
 
