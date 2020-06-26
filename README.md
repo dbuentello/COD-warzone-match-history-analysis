@@ -50,6 +50,9 @@ For each match in the array the script tries fetching as many players as possibl
 }
 ```
 > Fraction of the output returned when searching the username `Shroud`.
+
+![Call of Duty Privacy Settings](https://github.com/dtslubbersen/COD-warzone-match-history-analysis/blob/master/images/PrivacySettings.png)
+> A player will not be found is their privacy settings aren't set like in the image for their platform.
 2. Filters the FuzzySearch to the platform in the `PlayerInfo` object and Activision Id (uno)
 3. Fetches the past 20 matches for every single result in the filtered FuzzySearch and checks for a `matchID` match. 
 4. It keeps fetching the filtered FuzzySearch result until a player is found. If no player is found it moves on to the get FuzzySearch.
