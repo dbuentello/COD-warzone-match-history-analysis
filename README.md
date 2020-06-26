@@ -10,8 +10,10 @@ $ npm install
 ```
 Then make a `config.js` and a `.env` file following the formats shown in `configexample.cs` and `.envexample`. 
 
-Keep in mind trying to fetch all players from one match can use anywhere from 3000 to 5000 api requests. Add more then one Call of Duty account to your `config.js` one account will be rate limited before you can finish fetching one match.
-
+Keep in mind trying to fetch all players from one match can use anywhere from 3000 to 5000 api requests. Add more then one Call of Duty account to your `config.js` one account will be rate limited before you can finish fetching one match. If you've done that you're ready to run the script by issuing:
+```shell
+$ node analysis.js
+```
 That's it! Pst. Consider **starring** the repository if you like it! <3
 
 ### To do
