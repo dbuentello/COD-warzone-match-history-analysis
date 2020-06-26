@@ -15,4 +15,7 @@
     "log4js": "^6.3.0",
     "p-queue": "^6.4.0"
   },
+  "bin": {
+    "cod-warzone-match-history-analysis" : "./src/analysis.js"
+  }
 }
