@@ -121,3 +121,7 @@ node_modules
 .vscode/settings.json
 data.json
 config.js
+<<<<<<< HEAD
+=======
+config.js
+>>>>>>> 7ae8075ec481f39557e061c6ea1e982e1d7005a7
