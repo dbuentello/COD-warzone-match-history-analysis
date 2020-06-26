@@ -13,10 +13,6 @@
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
     "log4js": "^6.3.0",
-    "nedb-promises": "^4.0.3",
     "p-queue": "^6.4.0"
   },
-  "devDependencies": {
-    "eslint": "^7.1.0"
-  }
 }
