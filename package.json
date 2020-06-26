@@ -16,6 +16,6 @@
     "p-queue": "^6.4.0"
   },
   "bin": {
-    "cod-warzone-match-history-analysis" : "./src/analysis.js"
+    "analyse": "./src/analysis.js"
   }
 }
