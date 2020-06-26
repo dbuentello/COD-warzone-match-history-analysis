@@ -1,5 +1,6 @@
 require('dotenv').config();
 const _ = require('lodash');
+const config = require('./config.js');
 const fs = require('fs').promises;
 const api = require('./helpers/api');
 const MatchClass = require('./classes/Match');
@@ -13,19 +14,26 @@ const mainLogger = log.mainLogger;
 const playerToSearch = { username: config.username, platform: config.platform };
 
 const main = async () => {
-	// Analyse raw match data from a json file.
-	// const rawFile = fs.readFileSync(`insertfilenamehere.json`);
-	// const jsonParse = JSON.parse(rawFile);
+	if (playerToSearch.username === '' || playerToSearch === undefined || playerToSearch === null) {
+		mainLogger.error(`Invalid username in 'config.js'.`);
+		process.stdin.once('', process.exit(1));
+	}
+
+	if (!['battle', 'psn', 'uno', 'xbl'].includes(playerToSearch.platform)) {
+		mainLogger.error(`Invalid platform in 'config.js'.`);
+		process.stdin.once('', process.exit(1));
+	}
 
 	const rawMatches = await api.fetchMatchesForPlayer(playerToSearch);
 	const matchesInfo = await parseMatchesInfo(rawMatches);
 
-	// // Analyse x matches.
-	// await fetchMatches(matchesInfo, 5, true);
-
-	// Analyse 1 specific game.
-	const filteredMatch = matchesInfo.filter(m => m.id == config.matchId)[0];
-	await fetchMatches([filteredMatch], 1, true);
+	if (config.matchId === '' || config.matchId === undefined || config.matchId === null) {
+		await fetchMatches(matchesInfo, 5, true);
+	}
+	else {
+		const filteredMatch = matchesInfo.filter(m => m.id == config.matchId)[0];
+		await fetchMatches([filteredMatch], 1, true);
+	}
 };
 
 main();
@@ -36,7 +44,7 @@ main();
  * @returns An array of matches cleaned up into MatchInfo objects.
  */
 const parseMatchesInfo = async (rawMatches) => {
-	if (rawMatches === undefined) {
+	if (rawMatches === undefined || rawMatches === null) {
 		return null;
 	}
 
@@ -48,15 +56,20 @@ const parseMatchesInfo = async (rawMatches) => {
 		const playersInfoToFollow = [];
 		const otherPlayersInfo = [];
 
-		for (const rankedTeam of rawMatch.rankedTeams) {
-			for (const player of rankedTeam.players) {
-				const filteredPlayer = new PlayerInfoClass(player);
-
-				if (player.team == rawMatch.player.team) { playersInfoToFollow.push(filteredPlayer); }
-				else {
-					otherPlayersInfo.push(filteredPlayer);
+		try {
+			for (const rankedTeam of rawMatch.rankedTeams) {
+				for (const player of rankedTeam.players) {
+					const filteredPlayer = new PlayerInfoClass(player);
+	
+					if (player.team == rawMatch.player.team) { playersInfoToFollow.push(filteredPlayer); }
+					else {
+						otherPlayersInfo.push(filteredPlayer);
+					}
 				}
 			}
+		} catch (error) {
+			mainLogger.error(`Error while parsing raw matches: ${error}`);
+			process.stdin.once('', process.exit(1));
 		}
 
 		mainLogger.info(`Parsed info for match with id '${rawMatch.matchID}'.`);
@@ -69,12 +82,16 @@ const parseMatchesInfo = async (rawMatches) => {
 
 /**
  * Fetches matches from the api using the matchesInfo.
- * @param playerInfo Cleaned up object containing the necessary information for a player.
- * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
+ * @param matchesInfo Cleaned up array of objects containing the necessary information to fetch all users from it.
+ * @param stopAfter Amount of matches to fetch until stopping.
  * @param strict Boolean that is used to decide whether the program should or should not fetch a user down the line by fuzzy searching and comparing match history.
  * @returns A player object with some player information and statistics or null.
  */
 const fetchMatches = async (matchesInfo, stopAfter, strict) => {
+	if (matchesInfo === undefined || matchesInfo === null) {
+		return null;
+	}
+
 	let count = 0;
 
 	for (const matchInfo of matchesInfo) {
@@ -138,7 +155,7 @@ const fetchPlayersFromMatch = async (matchInfo, strict) => {
  * @returns A player object with some player information and statistics or null.
  */
 const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
-	if (playerInfo == undefined || playerInfo == null) {
+	if (playerInfo === undefined || playerInfo === null || matchInfo === undefined || matchInfo === null) {
 		return null;
 	}
 
@@ -161,7 +178,7 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
 
 	}
 
-	mainLogger.info(`Couldn't find player '${playerInfo.username}' on any platform.`);
+	mainLogger.warn(`Couldn't find player '${playerInfo.username}' on any platform.`);
 	const player = new PlayerClass(playerInfo, null);
 	player.updateInfo(playerInfo, false);
 	return player;
@@ -173,7 +190,11 @@ const fetchPlayerFromApi = async (playerInfo, matchInfo, strict) => {
  * @param matchInfo Cleaned up object containing the necessary information to fetch all users from it.
  * @returns A player object with some player information and statistics or null.
  */
-const verifyThatPlayerWasInMatch = async (potentialPlayerInfo, playerInfo, matchInfo) => {
+const verifyThatPlayerWasInMatch = async (potentialPlayerInfo, matchInfo) => {
+	if (potentialPlayerInfo === undefined || potentialPlayerInfo === null || matchInfo === undefined || matchInfo === null) {
+		return null;
+	}
+
 	const player = await api.fetchPlayer(potentialPlayerInfo);
 
 	if (player !== null) {
