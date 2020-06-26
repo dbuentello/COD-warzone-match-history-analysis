@@ -2,7 +2,7 @@ const log4js = require('log4js');
 log4js.configure({
 	appenders: {
 		stdout: { type: 'stdout' },
-		dateFile: { type: 'dateFile', filename: '../../logs/application.log', pattern: '.yyyy-MM-dd' },
+		dateFile: { type: 'dateFile', filename: '../../logs/application.log', pattern: '-yyyy-MM-dd.log' },
 		stdoutFilter: { type: 'logLevelFilter', appender: 'stdout', level: 'ALL' },
 		dateFileFilter: { type: 'logLevelFilter', appender: 'dateFile', level: 'INFO' },
 	},
