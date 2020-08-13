@@ -11,7 +11,7 @@
   "dependencies": {
     "call-of-duty-api": "^1.2.0",
     "dotenv": "^8.2.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "log4js": "^6.3.0",
     "p-queue": "^6.4.0"
   },
